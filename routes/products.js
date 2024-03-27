@@ -31,6 +31,18 @@ router.post("/", isAuthenticated, (req, res, next) => {
     });
 });
 
+router.get("/", (req, res, next) => {
+  Product.find()
+  .then((foundProducts) => {
+    console.log("Found Product ===>", foundProducts);
+    res.json(foundProducts)
+  })
+  .catch((err) => {
+    console.log(err);
+    res.json(err)
+  });
+});
+
 module.exports = router;
 
 //   title: String,

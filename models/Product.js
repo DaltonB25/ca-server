@@ -17,7 +17,7 @@ const productSchema = new Schema(
   }
 );
 
-const Student = mongoose.model("Product", productSchema);
+// const Student = mongoose.model("Product", productSchema);
 
 
 module.exports = model("Product", productSchema);

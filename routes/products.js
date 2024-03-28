@@ -78,6 +78,28 @@ router.put("/update/:productId", isAuthenticated, (req, res, next) => {
   });
 });
 
+// Delete product by ID
+router.delete("/delete/:productId", isAuthenticated, (req, res, next) => {
+
+  const { productId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    res.status(400).json({ message: "Specified is is not valid" });
+    return;
+  }
+
+  Product.findByIdAndDelete(productId)
+  .then((deletedProduct) => {
+    console.log("This is our deleted product", deletedProduct)
+    res.json(deletedProduct)
+  })
+  .catch((err) => {
+    console.log(err);
+    res.json(err);
+  });
+
+})
+
 module.exports = router;
 
 //   title: String,

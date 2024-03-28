@@ -78,7 +78,7 @@ router.put("/update/:productId", isAuthenticated, isAdmin, (req, res, next) => {
   });
 });
 
-// Delete product by ID
+// Delete product by ID with Admin
 router.delete("/delete/:productId", isAuthenticated, isAdmin, (req, res, next) => {
 
   const { productId } = req.params;

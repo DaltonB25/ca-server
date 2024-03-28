@@ -6,7 +6,7 @@ const Product = require("../models/Product");
 const isAuthenticated = require("../middleware/isAuthenticated");
 const isAdmin = require("../middleware/isAdmin")
 
-// Create new product
+// Create new product only for Admin
 router.post("/", isAuthenticated, isAdmin, (req, res, next) => {
   const {title, description, price, rating, stock, brand, category, thumbnail, images,} = req.body;
 

@@ -58,7 +58,7 @@ router.get("/:productId", (req, res, next) => {
   });
 });
 
-// Update product ID
+// Update product ID with Admin
 router.put("/update/:productId", isAuthenticated, isAdmin, (req, res, next) => {
   const { productId } = req.params;
 

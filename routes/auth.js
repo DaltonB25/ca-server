@@ -57,7 +57,7 @@ router.post("/signup", (req, res, next) => {
 
         // Create a new object that doesn't expose the password
         const user = { email, name, _id };
-
+        //Added type for the admin and user
         const payload = { _id, email, name, type };
  
         // Create and sign the token

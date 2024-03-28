@@ -4,10 +4,10 @@ var mongoose = require("mongoose");
 
 const Product = require("../models/Product");
 const isAuthenticated = require("../middleware/isAuthenticated");
-const isOwner = require("../middleware/isOwner");
+const isAdmin = require("../middleware/isAdmin")
 
 // Create new product
-router.post("/", isAuthenticated, (req, res, next) => {
+router.post("/", isAuthenticated, isAdmin, (req, res, next) => {
   const {title, description, price, rating, stock, brand, category, thumbnail, images,} = req.body;
 
   Product.create({
@@ -59,7 +59,7 @@ router.get("/:productId", (req, res, next) => {
 });
 
 // Update product ID
-router.put("/update/:productId", isAuthenticated, (req, res, next) => {
+router.put("/update/:productId", isAuthenticated, isAdmin, (req, res, next) => {
   const { productId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(productId)) {
@@ -79,7 +79,7 @@ router.put("/update/:productId", isAuthenticated, (req, res, next) => {
 });
 
 // Delete product by ID
-router.delete("/delete/:productId", isAuthenticated, (req, res, next) => {
+router.delete("/delete/:productId", isAuthenticated, isAdmin, (req, res, next) => {
 
   const { productId } = req.params;
 
@@ -101,13 +101,3 @@ router.delete("/delete/:productId", isAuthenticated, (req, res, next) => {
 })
 
 module.exports = router;
-
-//   title: String,
-//   description: String,
-//   price: Number,
-//   rating: Number,
-//   stock: Number,
-//   brand: String,
-//   category: String,
-//   thumbnail: String,
-//   images: Array,

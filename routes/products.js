@@ -58,6 +58,26 @@ router.get("/:productId", (req, res, next) => {
   });
 });
 
+// Update product ID
+router.put("/update/:productId", isAuthenticated, (req, res, next) => {
+  const { productId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    res.status(400).json({ message: "Specified is is not valid" });
+    return;
+  }
+
+  Product.findByIdAndUpdate(productId, req.body, { new: true })
+  .then((updatedProduct) => {
+    console.log("Updated product ====>", updatedProduct);
+    res.json(updatedProduct);
+  })
+  .catch((err) => {
+    console.log(err);
+    res.json(err);
+  });
+});
+
 module.exports = router;
 
 //   title: String,

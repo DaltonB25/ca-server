@@ -6,6 +6,7 @@ const Product = require("../models/Product");
 const isAuthenticated = require("../middleware/isAuthenticated");
 const isOwner = require("../middleware/isOwner");
 
+// Create new product
 router.post("/", isAuthenticated, (req, res, next) => {
   const {title, description, price, rating, stock, brand, category, thumbnail, images,} = req.body;
 
@@ -31,6 +32,7 @@ router.post("/", isAuthenticated, (req, res, next) => {
     });
 });
 
+// Get all products
 router.get("/", (req, res, next) => {
   Product.find()
   .then((foundProducts) => {
@@ -40,6 +42,19 @@ router.get("/", (req, res, next) => {
   .catch((err) => {
     console.log(err);
     res.json(err)
+  });
+});
+
+// Get product by ID
+router.get("/:productId", (req, res, next) => {
+  Product.findById(req.params.productId)
+  .then((foundProducts) => {
+    console.log("Found product ->", foundProducts);
+    res.json(foundProducts)
+  })
+  .catch((error) => {
+    console.error("Failed to retrieve product", error);
+    res.json({ errorMsg: "Failed to retrieve product", error});
   });
 });
 

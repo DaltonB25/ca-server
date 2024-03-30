@@ -23,17 +23,17 @@ router.post("/add", isAuthenticated, (req, res, next) => {
 })
 
 // //Get the cart
-// router.get("/", (req, res, next) => {
-//     Cart.find()
-//     .then((foundCarts) => {
-//       console.log("Found Carts ===>", foundCarts);
-//       res.json(foundCarts)
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//       res.json(err)
-//     });
-//   });
+router.get("/", (req, res, next) => {
+    Cart.find()
+    .then((foundCarts) => {
+      console.log("Found Carts ===>", foundCarts);
+      res.json(foundCarts)
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json(err)
+    });
+  });
 
 // // Add to cart
 // router.post("/add/:productId", isAuthenticated, (req, res, next) => {

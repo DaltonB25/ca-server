@@ -36,8 +36,9 @@ router.get("/", (req, res, next) => {
   });
 
 // // Add to cart
-router.post("/add/:productId", isAuthenticated, (req, res, next) => {
-    Product.findById(req.params.productId)
+router.post("/add/:cartId", isAuthenticated, (req, res, next) => {
+    const { cartId } = req.params;
+    Cart.findById(req.params.cartId)
     .then((addProduct) => {
         console.log("Added product to cart ===>", addProduct)
         res.json(addProduct)

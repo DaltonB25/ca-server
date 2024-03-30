@@ -7,6 +7,7 @@ var mongoose = require('mongoose')
 var usersRouter = require('./routes/users');
 var productsRouter = require("./routes/products")
 var authRouter = require('./routes/auth')
+var cartsRouter = require('./routes/carts')
 
 var app = express();
 
@@ -27,6 +28,7 @@ app.use(
 app.use('/users', usersRouter);
 app.use('/products', productsRouter)
 app.use('/auth', authRouter)
+app.use('/carts', cartsRouter)
 
 mongoose
   .connect(process.env.MONGODB_URI)

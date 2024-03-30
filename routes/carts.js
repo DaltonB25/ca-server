@@ -36,17 +36,17 @@ router.get("/", (req, res, next) => {
   });
 
 // // Add to cart
-// router.post("/add/:productId", isAuthenticated, (req, res, next) => {
-//     Product.findById(req.params.productId)
-//     .then((addProduct) => {
-//         console.log("Added product to cart ===>", addProduct)
-//         res.json(addProduct)
-//     })
-//     .catch((error) => {
-//         console.error("Failed to add product", error);
-//         res.json({ errorMsg: "Failed to add product", error});
-//       }); 
-// })
+router.post("/add/:productId", isAuthenticated, (req, res, next) => {
+    Product.findById(req.params.productId)
+    .then((addProduct) => {
+        console.log("Added product to cart ===>", addProduct)
+        res.json(addProduct)
+    })
+    .catch((error) => {
+        console.error("Failed to add product", error);
+        res.json({ errorMsg: "Failed to add product", error});
+      }); 
+})
 
 // // Update cart
 // router.put("/update/:cartId", isAuthenticated, (req, res, next) => {

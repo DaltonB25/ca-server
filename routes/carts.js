@@ -49,24 +49,24 @@ router.post("/add/:productId", isAuthenticated, (req, res, next) => {
 })
 
 // // Update cart
-// router.put("/update/:cartId", isAuthenticated, (req, res, next) => {
-//     const { cartId } = req.params;
+router.put("/update/:cartId", isAuthenticated, (req, res, next) => {
+    const { cartId } = req.params;
   
-//     if (!mongoose.Types.ObjectId.isValid(cartId)) {
-//       res.status(400).json({ message: "Specified is is not valid" });
-//       return;
-//     }
+    if (!mongoose.Types.ObjectId.isValid(cartId)) {
+      res.status(400).json({ message: "Specified is is not valid" });
+      return;
+    }
   
-//     Product.findByIdAndUpdate(cartId, req.body, { new: true })
-//     .then((updatedCartId) => {
-//       console.log("Updated product in cart ====>", updatedCartId);
-//       res.json(updatedCartId);
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//       res.json(err);
-//     });
-//   });
+    Product.findByIdAndUpdate(cartId, req.body, { new: true })
+    .then((updatedCartId) => {
+      console.log("Updated product in cart ====>", updatedCartId);
+      res.json(updatedCartId);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json(err);
+    });
+  });
 
 //   // Delete product in cart
 //   router.delete("/")

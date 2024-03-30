@@ -69,7 +69,7 @@ router.put("/update/:cartId", isAuthenticated, (req, res, next) => {
   });
 
 //   // Delete product in cart
-//   router.delete("/")
+  router.delete("/")
 
 
 

@@ -65,7 +65,7 @@ router.post("/signup", (req, res, next) => {
         const authToken = jwt.sign( 
           payload,
           process.env.SECRET,
-          { algorithm: 'HS256', expiresIn: "1h" }
+          { algorithm: 'HS256', expiresIn: "10h" }
         );
 
         // Send a json response containing the user object

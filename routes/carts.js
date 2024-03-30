@@ -75,4 +75,3 @@ router.put("/update/:cartId", isAuthenticated, (req, res, next) => {
 
 module.exports = router
 
-// Add to a cart, Update and delete

@@ -5,12 +5,12 @@ const Cart = require('../models/Cart')
 const Product = require('../models/Product')
 const isAuthenticated = require('../middleware/isAuthenticated')
 
-// Create a Cart
+// Create a user's Cart, but should only be hit if user doesn't have a cart (right after signup)
 router.post("/add", isAuthenticated, (req, res, next) => {
-    const { user, products } = req.body
+
    Cart.create({
-        user,
-        products
+        user: req.user._id,
+        products: []
       })
       .then((newCart) => {
         console.log("this is the new cart ===>", newCart);
@@ -22,55 +22,139 @@ router.post("/add", isAuthenticated, (req, res, next) => {
       });
 })
 
-// //Get the cart
-router.get("/", (req, res, next) => {
-    Cart.find()
-    .then((foundCarts) => {
-      console.log("Found Carts ===>", foundCarts);
-      res.json(foundCarts)
+//Gets a user's cart
+router.get("/", isAuthenticated, async (req, res, next) => {
+
+  try {
+
+    let thisCart = await Cart.find({user: req.user._id})
+
+    let productPromises = thisCart.products.map((product) => {
+      return Product.findById(product.product)
+    })
+
+    let foundProducts = await Promise.allSettled(productPromises)
+
+    let completedProducts = []
+
+    foundProducts.forEach((product, index) => {
+      completedProducts.push({product: product, quantity: thisCart.products[index].quantity, price: thisCart.products[index]})
+    })
+
+    thisCart.products = completedProducts
+
+    res.json(thisCart)
+
+  } catch(err) {
+    console.log(err);
+    res.json(err)
+  }
+
+  });
+
+// // Adds a product to cart
+router.post("/add/:productId/:cartId", isAuthenticated, async (req, res, next) => {
+
+  try {
+
+    const { productId, cartId } = req.params
+
+    const { quantity } = req.body
+
+    let thisProduct = await Product.findById(productId)
+
+    let thisProductTotal = thisProduct.price * quantity
+
+    let productToAdd = {
+      product: productId,
+      quantity,
+      price : thisProductTotal
+    }
+
+    let thisCart = await Cart.findById(cartId)
+
+    thisCart.products.push(productToAdd)
+
+    let updatedCart = await thisCart.save()
+
+    res.json(updatedCart)
+
+  } catch(err) {
+    consol.log("Error adding to cart")
+    res.json({ errorMessage: "Error adding item to cart", err})
+  }
+
+})
+
+// Update product quantity in cart
+router.put("/update-quantity/:productId", isAuthenticated, async (req, res, next) => {
+  
+  try {
+      const { productId } = req.params;
+
+      const { quantity } = req.body
+    
+      let thisCart = await Cart.find({user: req.user._id})
+
+      let productIndex
+
+      let thisProduct = thisCart.products.find((product, index) => {
+        productIndex = index
+        return product.product == productId
+      })
+
+      thisProduct.quantity = quantity
+      
+      let foundProduct = Product.findById(productId)
+
+      thisProduct.price = quantity * foundProduct.price
+
+      thisCart.products[productIndex] = thisProduct
+
+      let updatedCart = await thisCart.save()
+
+      res.json(updatedCart)
+
+    } catch(err) {
+      console.log(err);
+      res.json(err);
+    }
+  
+
+  });
+
+// Delete all instances of a product in cart
+router.delete("/:productId", isAuthenticated, async (req, res, next) => {
+  try {
+
+    let thisCart = await Cart.find({user: req.user._id})
+
+    let fewerProducts = thisCart.products.filter((product) => product.product != req.params.productId)
+
+    thisCart.products = fewerProducts
+
+    let refreshedCart = await thisCart.save()
+
+    res.json(refreshedCart)
+
+  } catch(err) {
+    console.log(err);
+    res.json(err)
+  }
+})
+
+// Delete an entire cart after you finalize purchase 
+router.delete('/:cartId', isAuthenticated, (req, res, next) => {
+  Cart.findByIdAndDelete(req.params.cartId)
+    .then((deletedCart) => {
+      console.log("this is the deleted cart ===>", deletedCart)
+      res.json(deletedCart)
     })
     .catch((err) => {
       console.log(err);
       res.json(err)
-    });
-  });
-
-// // Add to cart
-router.post("/add/:productId/:cartId", isAuthenticated, (req, res, next) => {
-    const { cartId } = req.params;
-    Cart.findById(req.params.cartId)
-    .then((addProduct) => {
-        console.log("Added product to cart ===>", addProduct)
-        res.json(addProduct)
     })
-    .catch((error) => {
-        console.error("Failed to add product", error);
-        res.json({ errorMsg: "Failed to add product", error});
-      }); 
 })
-
-// // Update cart
-router.put("/update/:cartId", isAuthenticated, (req, res, next) => {
-    const { cartId } = req.params;
-  
-    if (!mongoose.Types.ObjectId.isValid(cartId)) {
-      res.status(400).json({ message: "Specified is is not valid" });
-      return;
-    }
-  
-    Product.findByIdAndUpdate(cartId, req.body, { new: true })
-    .then((updatedCartId) => {
-      console.log("Updated product in cart ====>", updatedCartId);
-      res.json(updatedCartId);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.json(err);
-    });
-  });
-
-//   // Delete product in cart
-  router.delete("/")
 
 
 

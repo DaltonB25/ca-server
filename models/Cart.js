@@ -7,13 +7,7 @@ const CartItemSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Product'
     },
-    quantity: Number,
-    title: {
-        type: String,
-    },
-    thumbnail: {
-        type: String,
-    },
+    quantity: Number,   
     price: {
         type: Number,
         default: 0
@@ -24,18 +18,18 @@ const CartItemSchema = new Schema({
 
 module.exports = model('CartItem', CartItemSchema)
 
-const CartSchema = new Schema({
+const CartSchema = new Schema(
+  {
     products: [CartItemSchema],
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User'
     },
-    updated: Date,
-    created: {
-      type: Date,
-      default: Date.now
-    }
-  });
+  },
+  {
+    timestamps: true
+  }
+);
   
   module.exports = model('Cart', CartSchema);
 

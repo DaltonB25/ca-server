@@ -8,18 +8,18 @@ const isAuthenticated = require('../middleware/isAuthenticated')
 // Create a user's Cart, but should only be hit if user doesn't have a cart (right after signup)
 router.post("/add", isAuthenticated, (req, res, next) => {
 
-   Cart.create({
-        user: req.user._id,
-        products: []
-      })
-      .then((newCart) => {
-        console.log("this is the new cart ===>", newCart);
-        res.json(newCart);
-      })
-      .catch((err) => {
-        console.log(err);
-        res.json(err);
-      });
+  Cart.create({
+    user: req.user._id,
+    products: []
+  })
+    .then((newCart) => {
+      console.log("this is the new cart ===>", newCart);
+      res.json(newCart);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json(err);
+    });
 })
 
 //Gets a user's cart
@@ -27,30 +27,37 @@ router.get("/", isAuthenticated, async (req, res, next) => {
 
   try {
 
-    let thisCart = await Cart.find({user: req.user._id})
+    let thisCart = await Cart.find({ user: req.user._id })
 
-    let productPromises = thisCart.products.map((product) => {
-      return Product.findById(product.product)
-    })
 
-    let foundProducts = await Promise.allSettled(productPromises)
+    if (thisCart.products && thisCart.products.length) {
 
-    let completedProducts = []
+      let productPromises = thisCart.products.map((product) => {
+        return Product.findById(product.product)
+      })
 
-    foundProducts.forEach((product, index) => {
-      completedProducts.push({product: product, quantity: thisCart.products[index].quantity, price: thisCart.products[index]})
-    })
+      let foundProducts = await Promise.allSettled(productPromises)
 
-    thisCart.products = completedProducts
+      let completedProducts = []
+
+      foundProducts.forEach((product, index) => {
+        completedProducts.push({ product: product, quantity: thisCart.products[index].quantity, price: thisCart.products[index] })
+      })
+
+      thisCart.products = completedProducts
+
+
+    }
+
 
     res.json(thisCart)
 
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     res.json(err)
   }
 
-  });
+});
 
 // // Adds a product to cart
 router.post("/add/:productId/:cartId", isAuthenticated, async (req, res, next) => {
@@ -68,7 +75,7 @@ router.post("/add/:productId/:cartId", isAuthenticated, async (req, res, next) =
     let productToAdd = {
       product: productId,
       quantity,
-      price : thisProductTotal
+      price: Number(thisProductTotal)
     }
 
     let thisCart = await Cart.findById(cartId)
@@ -79,55 +86,58 @@ router.post("/add/:productId/:cartId", isAuthenticated, async (req, res, next) =
 
     res.json(updatedCart)
 
-  } catch(err) {
-    consol.log("Error adding to cart")
-    res.json({ errorMessage: "Error adding item to cart", err})
+  } catch (err) {
+    console.log("Error adding to cart", err)
+    res.json({ errorMessage: "Error adding item to cart", err })
   }
 
 })
 
 // Update product quantity in cart
 router.put("/update-quantity/:productId", isAuthenticated, async (req, res, next) => {
-  
+
   try {
-      const { productId } = req.params;
+    const { productId } = req.params;
 
-      const { quantity } = req.body
-    
-      let thisCart = await Cart.find({user: req.user._id})
+    const { quantity } = req.body
 
-      let productIndex
+    let thisCart = await Cart.findOne({ user: req.user._id })
+    let productIndex
 
-      let thisProduct = thisCart.products.find((product, index) => {
-        productIndex = index
-        return product.product == productId
-      })
+    let thisProduct = thisCart.products.find((product, index) => {
+      productIndex = index
+      return product.product == productId
+    })
 
-      thisProduct.quantity = quantity
-      
-      let foundProduct = Product.findById(productId)
+    thisProduct.quantity  = quantity
 
-      thisProduct.price = quantity * foundProduct.price
+    let foundProduct = await Product.findById(productId)
 
-      thisCart.products[productIndex] = thisProduct
+    console.log("thisproduct", thisProduct)
+    console.log("thisfoundprodcut", foundProduct)
 
-      let updatedCart = await thisCart.save()
 
-      res.json(updatedCart)
+    thisProduct.price = Number(quantity * foundProduct.price)
 
-    } catch(err) {
-      console.log(err);
-      res.json(err);
-    }
-  
+    thisCart.products[productIndex] = thisProduct
 
-  });
+    let updatedCart = await thisCart.save()
+
+    res.json(updatedCart)
+
+  } catch (err) {
+    console.log(err);
+    res.json(err);
+  }
+
+
+});
 
 // Delete all instances of a product in cart
 router.delete("/:productId", isAuthenticated, async (req, res, next) => {
   try {
 
-    let thisCart = await Cart.find({user: req.user._id})
+    let thisCart = await Cart.findOne({ user: req.user._id })
 
     let fewerProducts = thisCart.products.filter((product) => product.product != req.params.productId)
 
@@ -137,7 +147,7 @@ router.delete("/:productId", isAuthenticated, async (req, res, next) => {
 
     res.json(refreshedCart)
 
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     res.json(err)
   }

@@ -153,7 +153,7 @@ router.delete("/:productId", isAuthenticated, async (req, res, next) => {
   }
 })
 
-// Delete an entire cart after you finalize purchase 
+// Delete an entire cart after your finalize purchase 
 router.delete('/:cartId', isAuthenticated, (req, res, next) => {
   Cart.findByIdAndDelete(req.params.cartId)
     .then((deletedCart) => {

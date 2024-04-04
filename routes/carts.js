@@ -27,30 +27,32 @@ router.get("/", isAuthenticated, async (req, res, next) => {
 
   try {
 
-    let thisCart = await Cart.find({ user: req.user._id })
+    let thisCart = await Cart.findOne({ user: req.user._id })
+
+    let populatedCart = await thisCart.populate({path: 'products.product'})
 
 
-    if (thisCart.products && thisCart.products.length) {
+    // if (thisCart.products && thisCart.products.length) {
 
-      let productPromises = thisCart.products.map((product) => {
-        return Product.findById(product.product)
-      })
+    //   let productPromises = thisCart.products.map((product) => {
+    //     return Product.findById(product.product)
+    //   })
 
-      let foundProducts = await Promise.allSettled(productPromises)
+    //   let foundProducts = await Promise.allSettled(productPromises)
 
-      let completedProducts = []
+    //   let completedProducts = []
 
-      foundProducts.forEach((product, index) => {
-        completedProducts.push({ product: product, quantity: thisCart.products[index].quantity, price: thisCart.products[index] })
-      })
+    //   foundProducts.forEach((product, index) => {
+    //     completedProducts.push({ product: product, quantity: thisCart.products[index].quantity, price: thisCart.products[index] })
+    //   })
 
-      thisCart.products = completedProducts
-
-
-    }
+    //   thisCart.products = completedProducts
 
 
-    res.json(thisCart)
+    // }
+
+
+    res.json(populatedCart)
 
   } catch (err) {
     console.log(err);

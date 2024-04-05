@@ -84,9 +84,11 @@ router.post("/add/:productId/:cartId", isAuthenticated, async (req, res, next) =
 
     thisCart.products.push(productToAdd)
 
-    let updatedCart = await thisCart.save()
 
-    res.json(updatedCart)
+
+    let updatedCart = await thisCart.save()
+    let populated = await updatedCart.populate("products.product")
+    res.json(populated)
 
   } catch (err) {
     console.log("Error adding to cart", err)
@@ -124,8 +126,9 @@ router.put("/update-quantity/:productId", isAuthenticated, async (req, res, next
     thisCart.products[productIndex] = thisProduct
 
     let updatedCart = await thisCart.save()
+    let populated = await updatedCart.populate("products.product")
 
-    res.json(updatedCart)
+    res.json(populated)
 
   } catch (err) {
     console.log(err);
@@ -146,8 +149,9 @@ router.delete("/:productId", isAuthenticated, async (req, res, next) => {
     thisCart.products = fewerProducts
 
     let refreshedCart = await thisCart.save()
+    let populated = await refreshedCart.populate("products.product")
 
-    res.json(refreshedCart)
+    res.json(populated)
 
   } catch (err) {
     console.log(err);
